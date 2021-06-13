@@ -1,91 +1,228 @@
 import React from 'react';
-import {View, ScrollView, Pressable, Text, TouchableOpacity, ToastAndroid, TextInput} from 'react-native';
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  ToastAndroid,
+  TextInput,
+  Image,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import tw from '../lib/tailwind';
-import Space from '../components/Space';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toolbar from '../components/Toolbar';
+import {useBackHandler} from '@react-native-community/hooks';
+import Button from '../components/Button';
+import * as appActions from '../actions/app';
+import * as userActions from '../actions/user';
+import {connect} from 'react-redux';
+import ValidationError from '../components/ValidationError';
+import Validator from '../lib/Validator';
 
 function ProfilePage(props) {
 
+  if (!props.user.model) {
+    return null;
+  }
+
+  const inputFirstName = React.useRef(null);
+  const inputSurname = React.useRef(null);
+  const inputEmail = React.useRef(null);
+  const inputPhone = React.useRef(null);
+  const inputPassword = React.useRef(null);
+  const inputAddress = React.useRef(null);
+
+  const [firstname, setFirstName] = React.useState(props.user.model.firstname);
+  const [surname, setSurname] = React.useState(props.user.model.surname);
+  const [email, setEmail] = React.useState(props.user.model.email);
+  const [phone, setPhone] = React.useState(props.user.model.phone);
+  const [password, setPassword] = React.useState('');
+  const [address, setAddress] = React.useState(props.user.model.address);
+  const [formErrors, setFormErrors] = React.useState();
+
   const pressedUpdate = () => {
-    ToastAndroid.showWithGravity('Your account has been updated successfully', ToastAndroid.LONG, ToastAndroid.CENTER);
+    const data = {
+      firstname,
+      surname,
+      email,
+      phone,
+      address,
+    };
+    const rules = {
+      firstname: 'required',
+      surname: 'required',
+      email: 'required|email',
+      phone: 'required',
+      address: 'required',
+    };
+    const validation = new Validator(data, rules);
+    if (validation.passes()) {
+      setFormErrors(null);
+      props.updateProfile(data);
+    } else {
+      setFormErrors(validation.errors.all());
+    }
   };
+
+  React.useEffect(() => {
+    if (!props.user.update && props.user.updateSuccess) {
+      ToastAndroid.showWithGravity('Your account has been updated successfully', ToastAndroid.LONG, ToastAndroid.CENTER);
+    }
+    if (!props.user.update && props.user.updateError) {
+      ToastAndroid.showWithGravity(props.user.updateError.message, ToastAndroid.LONG, ToastAndroid.CENTER);
+    }
+  }, [props.user.update]);
+
+  React.useEffect(() => props.clearErrors, []);
+
+  const pressedBack = () => props.navigation.navigate('HomePage');
+
+  useBackHandler(() => {
+    pressedBack();
+    return true;
+  });
 
   return (
     <>
-      <Toolbar style={tw`relative`}>
-        <View style={tw`absolute left-0`}>
-          <Pressable onPress={props.navigation.goBack} android_ripple={{borderless: true}}>
-            <Icon name='arrow-left' style={tw`text-gray-400 text-2xl p-2`}/>
-          </Pressable>
-        </View>
-        <Text style={tw`text-base text-gray-400 font-bold text-center`}>
-          My Profile
-        </Text>
-      </Toolbar>
+      <Toolbar title="My Profile" backHandler={pressedBack}/>
       <ScrollView style={tw`p-3`}>
         <View style={tw`flex flex-row justify-center py-5`}>
-          <View style={tw`h-24 w-24 rounded-full bg-gray-200`}></View>
+          <Image
+            style={tw`h-24 w-24 rounded-full bg-gray-200`}
+            source={{uri: props.user.model.avatar}}
+          />
         </View>
         <TouchableOpacity>
-          <Text style={tw`uppercase text-blue-500 font-bold text-center`}>
+          <Text style={tw`uppercase text-blue-600 font-bold text-center`}>
             Change Avatar
           </Text>
         </TouchableOpacity>
 
         <View style={tw`mt-5 border-2 border-gray-200 rounded-2xl`}>
-          <View style={tw`border-b-2 border-gray-200 p-3 pb-0`}>
-            <Text style={tw`text-gray-400 font-bold`}>
-              Full name
-            </Text>
-            <View style={tw`flex flex-row`}>
-              <TextInput placeholder="Firstname" style={tw`text-base w-1/2 font-semibold text-gray-800`}></TextInput>
-              <TextInput placeholder="Surname" style={tw`text-base w-1/2 font-semibold text-gray-800`}></TextInput>
-            </View>
-          </View>
-          <View style={tw`border-b-2 border-gray-200 p-3 pb-0`}>
-            <Text style={tw`text-gray-400 font-bold`}>
-              Email address
-            </Text>
-            <TextInput placeholder="Email address" style={tw`text-base font-semibold text-gray-800`}></TextInput>
-          </View>
-          <View style={tw`border-b-2 border-gray-200 p-3 pb-0`}>
-            <Text style={tw`text-gray-400 font-bold`}>
-              Phone number
-            </Text>
-            <TextInput placeholder="Email Address" style={tw`text-base font-semibold text-gray-800`}></TextInput>
-          </View>
-          <View style={tw`p-3 pb-0`}>
-            <Text style={tw`text-gray-400 font-bold`}>
-              Delivery Address
-            </Text>
-            <TextInput placeholder="Delivery Address" style={tw`text-base font-semibold text-gray-800`}></TextInput>
-          </View>
-          <View style={tw`rounded-xl bg-blue-500 m-5 overflow-hidden`}>
-            <Pressable onPress={pressedUpdate} android_ripple={{color: 'rgba(255,255,255,0.25)'}}>
-              <View style={tw`p-3`}>
-                <Text style={tw`text-white text-sm font-bold tracking-wider uppercase text-center`}>
-                  Update Account
-                </Text>
-              </View>
-            </Pressable>
-          </View>
-        </View>
-        <View style={tw`rounded-xl border-2 border-gray-200 my-5 overflow-hidden`}>
-          <Pressable android_ripple={{color: 'rgba(0,0,0,0.05)'}}>
-            <View style={tw`p-3`}>
-              <Text style={tw`text-blue-500 text-sm font-bold tracking-wider uppercase text-center`}>
-                Contact Us
+          <View style={tw`border-b-2 border-gray-200 p-3`}>
+            <TouchableWithoutFeedback onPress={() => inputFirstName.current.focus()}>
+              <Text style={tw`text-gray-400 font-bold`}>
+                Full name
               </Text>
+            </TouchableWithoutFeedback>
+            <View style={tw`flex flex-row`}>
+              <View style={tw`w-1/2`}>
+                <TextInput
+                  ref={inputFirstName}
+                  value={firstname}
+                  onChangeText={setFirstName}
+                  onSubmitEditing={() => inputSurname.current.focus()}
+                  returnKeyType={'next'}
+                  blurOnSubmit={false}
+                  style={tw`text-xl font-medium text-gray-800 p-1`}
+                  editable={!props.user.update}
+                  placeholder="First Name"
+                />
+              </View>
+              <View style={tw`w-1/2`}>
+                <TextInput
+                  ref={inputSurname}
+                  value={surname}
+                  onChangeText={setSurname}
+                  onSubmitEditing={() => inputEmail.current.focus()}
+                  returnKeyType={'next'}
+                  blurOnSubmit={false}
+                  style={tw`text-xl font-medium text-gray-800 p-1`}
+                  editable={!props.user.update}
+                  placeholder="Surname"
+                />
+              </View>
             </View>
-          </Pressable>
+            <ValidationError name="firstname" errors={formErrors}/>
+            <ValidationError name="surname" errors={formErrors}/>
+          </View>
+          <View style={tw`border-b-2 border-gray-200 p-3`}>
+            <TouchableWithoutFeedback onPress={() => inputEmail.current.focus()}>
+              <Text style={tw`text-gray-400 font-bold`}>
+                Email address
+              </Text>
+            </TouchableWithoutFeedback>
+            <TextInput
+              ref={inputEmail}
+              value={email}
+              onChangeText={setEmail}
+              onSubmitEditing={() => inputPhone.current.focus()}
+              returnKeyType={'next'}
+              blurOnSubmit={false}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              style={tw`text-xl font-medium text-gray-800 p-1`}
+              editable={!props.user.update}
+              placeholder="Email address"
+            />
+            <ValidationError name="email" errors={formErrors}/>
+          </View>
+          <View style={tw`border-b-2 border-gray-200 p-3`}>
+            <TouchableWithoutFeedback onPress={() => inputPhone.current.focus()}>
+              <Text style={tw`text-gray-400 font-bold`}>
+                Phone number
+              </Text>
+            </TouchableWithoutFeedback>
+            <TextInput
+              ref={inputPhone}
+              value={phone}
+              onChangeText={setPhone}
+              onSubmitEditing={() => inputAddress.current.focus()}
+              returnKeyType={'next'}
+              blurOnSubmit={false}
+              keyboardType="phone-pad"
+              style={tw`text-xl font-medium text-gray-800 p-1`}
+              editable={!props.user.update}
+              placeholder="Phone number"
+            />
+            <ValidationError name="phone" errors={formErrors}/>
+          </View>
+          <View style={tw`p-3`}>
+            <TouchableWithoutFeedback onPress={() => inputAddress.current.focus()}>
+              <Text style={tw`text-gray-400 font-bold`}>
+                Delivery address
+              </Text>
+            </TouchableWithoutFeedback>
+            <TextInput
+              ref={inputAddress}
+              value={address}
+              onChangeText={setAddress}
+              style={tw`text-xl font-medium text-gray-800 p-1`}
+              editable={!props.user.update}
+              placeholder="Delivery address"
+              multiline
+              numberOfLines={3}
+            />
+            <ValidationError name="address" errors={formErrors}/>
+          </View>
+          <Button
+            onPress={pressedUpdate}
+            title="Update Account"
+            disabled={props.user.update}
+          />
         </View>
+        <Button outline title="Contact Us" style={tw`my-3`}/>
+        <Button onPress={props.logout} outline title="Sign Out" style={tw`mb-3`}/>
         <Text style={tw`text-xs text-gray-400 text-center`}>
           Made by devshop 🖥️📱 2021
         </Text>
+        <View style={tw`h-10`}/>
       </ScrollView>
     </>
   );
 }
 
-export default ProfilePage;
+const mapStateToProps = state => ({
+  app: state.app,
+  user: state.user,
+});
+
+const mapDispatchToProps = dispatch => ({
+  clearErrors: () => dispatch(appActions.clearErrors()),
+  logout: () => dispatch(userActions.logout()),
+  updateProfile: (data) => dispatch(userActions.updateProfile(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfilePage);

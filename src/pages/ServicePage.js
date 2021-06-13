@@ -5,8 +5,11 @@ import {Pressable, ScrollView, Text, View, TouchableOpacity} from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Space from '../components/Space';
 import Panel from '../components/Panel';
+import * as servicesActions from '../actions/services';
+import * as serviceActions from '../actions/service';
+import {connect} from 'react-redux';
 
-function SelectClothesPage(props) {
+function ServicePage(props) {
 
   const groups = [
     {
@@ -50,7 +53,7 @@ function SelectClothesPage(props) {
           </Pressable>
         </View>
         <Text style={tw`text-base text-gray-400 font-bold text-center`}>
-          Dry Cleaning
+          {props.service.model.name}
         </Text>
       </Toolbar>
       <ScrollView style={tw`p-3`}>
@@ -74,7 +77,7 @@ function SelectClothesPage(props) {
       </ScrollView>
       {/* Footer Button */}
       <View style={tw`border-t-2 border-gray-200 bg-white`}>
-        <View style={tw`rounded-xl bg-blue-500 mx-3 my-5 overflow-hidden`}>
+        <View style={tw`rounded-xl bg-blue-600 mx-3 my-5 overflow-hidden`}>
           <Pressable android_ripple={{color: 'rgba(255,255,255,0.25)'}}>
             <View style={tw`p-5 px-6 flex flex-row items-center justify-between`}>
               <Text style={tw`text-white text-sm font-bold uppercase text-center`}>
@@ -91,4 +94,13 @@ function SelectClothesPage(props) {
   );
 }
 
-export default SelectClothesPage;
+const mapStateToProps = state => ({
+  service: state.service,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchServices: () => dispatch(servicesActions.fetchServices()),
+  setService: (service) => dispatch(serviceActions.setService(service)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ServicePage);

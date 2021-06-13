@@ -4,42 +4,83 @@ import tw from '../lib/tailwind';
 import Space from '../components/Space';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toolbar from '../components/Toolbar';
+import * as offersActions from '../actions/offers';
+import * as ordersActions from '../actions/orders';
+import * as serviceActions from '../actions/service';
+import * as servicesActions from '../actions/services';
+import {connect} from 'react-redux';
+import * as orderActions from '../actions/order';
+import Order from '../resources/Order';
+import Shimmer from 'react-native-shimmer';
+import OrderListItem from '../components/OrderListItem';
+import * as app from '../../app.json';
 
 function HomePage(props) {
+
+  React.useEffect(() => {
+    props.fetchOffers();
+    props.fetchOrders();
+    props.fetchServices();
+  }, []);
+
+  const pressedService = (service) => () => {
+    props.setService(service);
+    props.navigation.navigate('ServicePage');
+  };
+
+  const pressedOrder = (order) => () => {
+    props.setOrder(order);
+    props.navigation.navigate('OrderPage');
+  };
+
+  const firstFeaturedOffer = props.offers.collection.find((offer) => offer.is_featured);
+
+  const activeOrders = props.orders.collection.filter((order) => Order.isActiveOrder(order));
+
+  const shimmerProps = {
+    opacity: 0.75,
+    duration: 1000,
+    pauseDuration: 1000,
+    intensity: 0.5
+  };
+
   return (
     <>
       <Toolbar>
         <Space X={1} style={tw`flex flex-row items-center justify-center`}>
-          <Text style={tw`text-lg text-blue-500 font-semibold tracking-tighter`}>
-            EazyWash
+          <Text style={tw`text-lg text-blue-600 font-bold tracking-tighter`}>
+            {app.name}
           </Text>
-          <Icon name="washing-machine" style={tw`text-2xl text-blue-500`}/>
+          <Icon name="washing-machine" style={tw`text-2xl text-blue-600`}/>
         </Space>
       </Toolbar>
 
       <ScrollView style={tw`py-3`}>
         {/* Featured Offer Section */}
-        <View style={tw`bg-blue-500 rounded-2xl m-3 p-5 flex flex-row justify-between items-center`}>
-          <View style={tw`w-3/5 pr-5`}>
-            <Text style={tw`text-xl font-bold text-white mb-1`}>
-              Flat 50% off on First Order
-            </Text>
-            <Text style={tw`text-white text-xs mb-4`}>
-              Valid for all new customers this month of June!
-            </Text>
-            <TouchableOpacity onPress={() => props.navigation.navigate('OffersPage')}>
-              <View style={tw`flex flex-row items-center`}>
-                <Text style={tw`text-white text-base font-semibold tracking-wide`}>
-                  View all offers
-                </Text>
-                <Icon name='arrow-right' style={tw`text-white ml-1 text-xl`}/>
-              </View>
-            </TouchableOpacity>
+        {firstFeaturedOffer && (
+          <View style={tw`bg-blue-600 rounded-2xl m-3 p-6`}>
+            <Shimmer {...shimmerProps}>
+              <Text style={tw`text-2xl font-bold text-white mb-1`}>
+                {firstFeaturedOffer.name}
+              </Text>
+            </Shimmer>
+            <Shimmer {...shimmerProps}>
+              <Text style={tw`text-white mb-6 text-base font-medium leading-6`}>
+                {firstFeaturedOffer.about}
+              </Text>
+            </Shimmer>
+            <Shimmer {...shimmerProps}>
+              <TouchableOpacity onPress={() => props.navigation.navigate('OffersPage')}>
+                <View style={tw`flex flex-row items-center`}>
+                  <Text style={tw`text-white text-base font-semibold tracking-wide`}>
+                    View all offers
+                  </Text>
+                  <Icon name='arrow-right' style={tw`text-white ml-1 text-xl`}/>
+                </View>
+              </TouchableOpacity>
+            </Shimmer>
           </View>
-          <View style={tw`flex flex-col items-center flex-1`}>
-            <View style={tw`h-48 w-32 rounded-lg bg-blue-100 opacity-50`}/>
-          </View>
-        </View>
+        )}
 
         <Space Y={10} style={tw`bg-white mt-5`}>
           {/* Our Services Section */}
@@ -49,20 +90,19 @@ function HomePage(props) {
                 Our Services
               </Text>
               <View style={tw`-mx-2 flex flex-row flex-wrap`}>
-                {['Dry Cleaning', 'Wash & Fold', 'Ironing', 'Darning']
-                  .map((each, loop) => (
-                    <View key={loop} style={tw`w-1/2 p-1`}>
+                {props.services.collection
+                  .map((service) => (
+                    <View key={service.id} style={tw`w-1/2 p-1`}>
                       <View style={tw`border-2 border-gray-200 rounded-2xl overflow-hidden`}>
-                        <Pressable onPress={() => props.navigation.navigate('SelectClothesPage')}
-                                   android_ripple={{color: 'rgba(0,0,0,0.05)'}}>
+                        <Pressable onPress={pressedService(service)} android_ripple={{color: 'rgba(0,0,0,0.05)'}}>
                           <Space X={2} style={tw`flex flex-row p-3`}>
                             <View style={tw`w-6 h-6 bg-blue-200 rounded-full my-px`}/>
                             <View>
                               <Text style={tw`text-base font-bold text-gray-600`}>
-                                {each}
+                                {service.name}
                               </Text>
                               <Text style={tw`text-gray-400 text-xs font-medium`}>
-                                12 Hours Min.
+                                {service.about}
                               </Text>
                             </View>
                           </Space>
@@ -80,34 +120,9 @@ function HomePage(props) {
               Your Active Orders
             </Text>
             <View style={tw`border-2 border-gray-200 rounded-2xl overflow-hidden`}>
-              {Array(5).fill().map((each, loop) => (
-                <View key={loop} style={tw`border-b-2 border-gray-200`}>
-                  <Pressable onPress={() => props.navigation.navigate('OrderPage')}
-                             android_ripple={{color: 'rgba(0,0,0,0.05)'}}>
-                    <Space X={3} style={tw`p-3 flex flex-row items-center`}>
-                      <View style={tw`h-20 w-16 rounded-xl bg-blue-100`}></View>
-                      <Space Y={2} style={tw``}>
-                        <View>
-                          <Text style={tw`text-lg text-gray-600 font-bold`}>
-                            Order No: 462687
-                          </Text>
-                          <Text style={tw`text-gray-400 text-xs font-medium`}>
-                            20 June 2018
-                          </Text>
-                        </View>
-                        <View style={tw`flex flex-row justify-start`}>
-                          <View style={tw`bg-blue-50 rounded-md p-1 px-2`}>
-                            <Text style={tw`text-blue-500 text-xs tracking-wide font-bold uppercase`}>
-                              Pending
-                            </Text>
-                          </View>
-                        </View>
-                      </Space>
-                    </Space>
-                    <Text style={tw`absolute bottom-3 right-3 text-lg font-semibold text-gray-400`}>
-                      $256
-                    </Text>
-                  </Pressable>
+              {activeOrders.map((order, loop) => (
+                <View key={order.id} style={tw`border-b-2 border-gray-200`}>
+                  <OrderListItem order={order} onPress={pressedOrder(order)}/>
                 </View>
               ))}
               <View>
@@ -129,4 +144,18 @@ function HomePage(props) {
   );
 }
 
-export default HomePage;
+const mapStateToProps = state => ({
+  offers: state.offers,
+  orders: state.orders,
+  services: state.services,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchOffers: () => dispatch(offersActions.fetchOffers()),
+  fetchOrders: () => dispatch(ordersActions.fetchOrders()),
+  fetchServices: () => dispatch(servicesActions.fetchServices()),
+  setOrder: (order) => dispatch(orderActions.setOrder(order)),
+  setService: (service) => dispatch(serviceActions.setService(service)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

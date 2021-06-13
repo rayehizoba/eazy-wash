@@ -10,17 +10,29 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/hooks": "^2.6.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
+    "axios": "^0.21.1",
+    "axios-mock-adapter": "^1.19.0",
+    "date-fns": "^2.22.1",
+    "faker": "^5.5.3",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-reanimated": "^2.2.0",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.3.0",
+    "react-native-shimmer": "^0.6.0",
     "react-native-vector-icons": "^8.1.0",
-    "tailwind-react-native-classnames": "^1.2.1"
+    "react-redux": "^7.2.4",
+    "redux": "^4.1.0",
+    "redux-persist": "^6.0.0",
+    "redux-thunk": "^2.3.0",
+    "tailwind-react-native-classnames": "^1.2.1",
+    "validatorjs": "^3.22.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
@@ -31,6 +43,7 @@
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-test-renderer": "16.13.1",
+    "redux-logger": "^3.0.6",
     "tailwindcss": "^2.1.4"
   },
   "jest": {

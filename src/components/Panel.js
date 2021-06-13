@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Easing, Animated, Pressable} from 'react-native';
+import {Text, View, Easing, Animated, Pressable} from 'react-native';
 import tw from '../lib/tailwind';
 import Space from './Space';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

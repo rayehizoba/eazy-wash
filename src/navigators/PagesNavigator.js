@@ -1,26 +1,26 @@
 import React from 'react';
-import tw from 'tailwind-react-native-classnames';
-import HomePage from '../pages/HomePage';
-import OffersPage from '../pages/OffersPage';
 import {createStackNavigator} from '@react-navigation/stack';
-import BottomNavigation from '../components/BottomNavigation';
-import OrdersPage from '../pages/OrdersPage';
-import ProfilePage from '../pages/ProfilePage';
+import AuthPagesNavigator from './AuthPagesNavigator';
+import PublicPagesNavigator from './PublicPagesNavigator';
+import {forSlide} from '../lib/navigator.hooks';
+import tw from '../lib/tailwind';
+import {connect} from "react-redux";
 
 const Stack = createStackNavigator();
 
 function PagesNavigator(props) {
+  const authCheck = props.user.model && props.user.token;
   return (
-    <>
-      <Stack.Navigator screenOptions={{headerShown: false, cardStyle: tw`bg-white`}}>
-        <Stack.Screen name="HomePage" component={HomePage}/>
-        <Stack.Screen name="OffersPage" component={OffersPage}/>
-        <Stack.Screen name="OrdersPage" component={OrdersPage}/>
-        <Stack.Screen name="ProfilePage" component={ProfilePage}/>
-      </Stack.Navigator>
-      <BottomNavigation/>
-    </>
+    <Stack.Navigator screenOptions={{headerShown: false, cardStyleInterpolator: forSlide, cardStyle: tw`bg-white`}}>
+      {authCheck
+        ? <Stack.Screen name="AuthPagesNavigator" component={AuthPagesNavigator}/>
+        : <Stack.Screen name="PublicPagesNavigator" component={PublicPagesNavigator}/>}
+    </Stack.Navigator>
   );
 }
 
-export default PagesNavigator;
+const mapStateToProps = state => ({
+  user: state.user,
+});
+
+export default connect(mapStateToProps)(PagesNavigator);

@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, ScrollView, Pressable, Text} from 'react-native';
 import tw from '../lib/tailwind';
-import Space from '../components/Space';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toolbar from '../components/Toolbar';
+import {connect} from 'react-redux';
 
 function OrderPage(props) {
   return (
@@ -15,7 +15,7 @@ function OrderPage(props) {
           </Pressable>
         </View>
         <Text style={tw`text-base text-gray-400 font-bold text-center`}>
-          Order No: 4792874
+          Order No: {props.order.model.order_number}
         </Text>
       </Toolbar>
       <ScrollView style={tw`p-3`}>
@@ -24,4 +24,10 @@ function OrderPage(props) {
   );
 }
 
-export default OrderPage;
+const mapStateToProps = state => ({
+  order: state.order,
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderPage);
