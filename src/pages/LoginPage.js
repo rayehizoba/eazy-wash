@@ -65,7 +65,7 @@ function LoginPage(props) {
             />
             <ValidationError name="email" errors={formErrors}/>
           </View>
-          <View style={tw`border-b-2 border-gray-200 p-3`}>
+          <View style={tw`p-3`}>
             <TouchableWithoutFeedback onPress={() => inputPassword.current.focus()}>
               <Text style={tw`text-gray-400 font-bold`}>
                 Password
@@ -83,14 +83,14 @@ function LoginPage(props) {
             />
             <ValidationError name="password" errors={formErrors}/>
           </View>
-          <Button onPress={pressedLogin} disabled={props.user.login} title="Sign In"/>
+          <Button onPress={pressedLogin} disabled={props.user.login} title="Sign In" style={tw`m-3`}/>
         </View>
         <Button
           onPress={() => props.navigation.navigate('RegisterPage')}
           outline
           disabled={props.user.login}
           title="Register Now"
-          style={tw`mt-5`}
+          style={tw`mt-3`}
         />
       </View>
     </View>

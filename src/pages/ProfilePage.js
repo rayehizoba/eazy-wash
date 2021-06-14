@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   ScrollView,
-  Pressable,
   Text,
   TouchableOpacity,
   ToastAndroid,
@@ -11,15 +10,14 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import tw from '../lib/tailwind';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toolbar from '../components/Toolbar';
-import {useBackHandler} from '@react-native-community/hooks';
 import Button from '../components/Button';
 import * as appActions from '../actions/app';
 import * as userActions from '../actions/user';
 import {connect} from 'react-redux';
 import ValidationError from '../components/ValidationError';
 import Validator from '../lib/Validator';
+import Space from '../components/Space';
 
 function ProfilePage(props) {
 
@@ -77,16 +75,9 @@ function ProfilePage(props) {
 
   React.useEffect(() => props.clearErrors, []);
 
-  const pressedBack = () => props.navigation.navigate('HomePage');
-
-  useBackHandler(() => {
-    pressedBack();
-    return true;
-  });
-
   return (
     <>
-      <Toolbar title="My Profile" backHandler={pressedBack}/>
+      <Toolbar title="My Profile"/>
       <ScrollView style={tw`p-3`}>
         <View style={tw`flex flex-row justify-center py-5`}>
           <Image
@@ -201,13 +192,16 @@ function ProfilePage(props) {
             onPress={pressedUpdate}
             title="Update Account"
             disabled={props.user.update}
+            style={tw`mx-3 mb-3`}
           />
         </View>
-        <Button outline title="Contact Us" style={tw`my-3`}/>
-        <Button onPress={props.logout} outline title="Sign Out" style={tw`mb-3`}/>
-        <Text style={tw`text-xs text-gray-400 text-center`}>
-          Made by devshop 🖥️📱 2021
-        </Text>
+        <Space Y={3} style={tw`mt-3`}>
+          <Button outline title="Contact Us"/>
+          <Button onPress={props.logout} outline title="Sign Out"/>
+          <Text style={tw`text-xs text-gray-400 text-center`}>
+            Made by devshop 🖥️📱 2021
+          </Text>
+        </Space>
         <View style={tw`h-10`}/>
       </ScrollView>
     </>

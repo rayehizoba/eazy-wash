@@ -120,7 +120,7 @@ function HomePage(props) {
               Your Active Orders
             </Text>
             <View style={tw`border-2 border-gray-200 rounded-2xl overflow-hidden`}>
-              {activeOrders.map((order, loop) => (
+              {activeOrders.map((order) => (
                 <View key={order.id} style={tw`border-b-2 border-gray-200`}>
                   <OrderListItem order={order} onPress={pressedOrder(order)}/>
                 </View>
@@ -139,6 +139,7 @@ function HomePage(props) {
             </View>
           </Space>
         </Space>
+        <View style={tw`h-6`}/>
       </ScrollView>
     </>
   );

@@ -12,16 +12,7 @@ function RegisterPage(props) {
 
   return (
     <>
-      <Toolbar style={tw`relative`}>
-        <View style={tw`absolute left-0`}>
-          <Pressable onPress={props.navigation.goBack} android_ripple={{borderless: true}}>
-            <Icon name='arrow-left' style={tw`text-gray-400 text-2xl p-2`}/>
-          </Pressable>
-        </View>
-        <Text style={tw`text-base text-gray-400 font-bold text-center`}>
-          Register Now
-        </Text>
-      </Toolbar>
+      <Toolbar title="Register Now"/>
       <ScrollView style={tw`p-3`}>
         <View style={tw`flex flex-row justify-center py-5`}>
           <View style={tw`h-24 w-24 rounded-full bg-gray-200`}></View>
@@ -76,6 +67,7 @@ function RegisterPage(props) {
             </Pressable>
           </View>
         </View>
+        <View style={tw`h-10`}/>
       </ScrollView>
     </>
   );

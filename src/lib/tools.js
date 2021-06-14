@@ -26,3 +26,18 @@ export const dateForHumans = (datetime) => {
 export const priceForHumans = (amount) => {
   return '$'+amount;
 };
+
+/**
+ *
+ * @param iter
+ * @returns {boolean}
+ */
+export const firstIter = (iter) => iter === 0;
+
+/**
+ *
+ * @param iter
+ * @param collection
+ * @returns {boolean}
+ */
+export const lastIter = (iter, collection) => iter === collection.length - 1;

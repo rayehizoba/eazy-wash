@@ -9,6 +9,7 @@ import React from 'react';
 const persistConfig = {
   storage: AsyncStorage,
   key: 'root',
+  // blacklist: ['categories']
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer());

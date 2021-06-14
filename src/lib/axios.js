@@ -3,6 +3,8 @@ import Service from '../resources/Service';
 import Offer from '../resources/Offer';
 import Order from '../resources/Order';
 import User from '../resources/User';
+import Category from '../resources/Category';
+import Cloth from '../resources/Cloth';
 
 // set default timeout to one minute
 axios.defaults.timeout = 60000;
@@ -44,4 +46,27 @@ mock.onGet('/services').reply(200, {
     new Service('Ironing', '5 Hours Min.'),
     new Service('Darning', '24 Hours Min.'),
   ],
+});
+
+const categories = [
+  new Category('Popular', '🔥', 'red'),
+  new Category('Business Clothes', '👔', 'blue'),
+  new Category('Outerwear', '🧥', 'purple'),
+  new Category('Casual Wear', '👕', 'green'),
+  new Category('Napkins & Quilts', '🛏️', 'yellow'),
+  new Category('Footwear', '👟', 'indigo'),
+];
+
+mock.onGet('/categories').reply(200, {categories});
+
+mock.onGet('/clothes').reply(200, {
+  clothes: [
+    new Cloth('Kids Dress', categories.find(i => i.color === 'red')),
+    new Cloth('Tuxedo', categories.find(i => i.color === 'purple')),
+    new Cloth('Jackets & Sweaters', categories.find(i => i.color === 'purple')),
+    new Cloth('Shorts', categories.find(i => i.color === 'green')),
+    new Cloth('Jeans', categories.find(i => i.color === 'green')),
+    new Cloth('Skirt', categories.find(i => i.color === 'green')),
+    new Cloth('Duvet', categories.find(i => i.color === 'yellow')),
+  ]
 });
